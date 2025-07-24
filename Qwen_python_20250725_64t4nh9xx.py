@@ -1,15 +1,8 @@
 import ccxt
 import time
-import os
-from dotenv import load_dotenv
 
-# بارگذاری متغیرهای محیطی
-load_dotenv()
-
-# اتصال به CoinEx
+# اتصال به CoinEx (بدون API Key برای تست)
 coinex = ccxt.coinex({
-    'apiKey': os.getenv('COINEX_API_KEY'),
-    'secret': os.getenv('COINEX_SECRET'),
     'enableRateLimit': True,
 })
 
@@ -23,24 +16,34 @@ def get_market_data(symbol):
         return None
 
 def main():
-    symbol = 'BTC/USDT'  # می‌تونیم تغییرش بدیم
+    symbols = ['BTC/USDT', 'ETH/USDT', 'BNB/USDT']  # چند تا کوین
+    
+    print("🤖 ربات تستی CoinEx شروع شد...")
+    print("در حال دریافت داده‌های بازار... (بدون پول واقعی)")
+    print("=" * 50)
     
     while True:
         try:
-            # دریافت داده‌های بازار
-            data = get_market_data(symbol)
-            if data:
-                print(f"{symbol}: قیمت = {data['last']}")
-                # اینجا منطق معاملاتی میاد
+            for symbol in symbols:
+                # دریافت داده‌های بازار
+                data = get_market_data(symbol)
+                if data:
+                    print(f"📊 {symbol}:")
+                    print(f"   قیمت فعلی: ${data['last']:,.2f}")
+                    print(f"   حجم 24h: ${data['quoteVolume']:,.0f}")
+                    print("-" * 30)
             
-            # استراحت 5 ثانیه
-            time.sleep(5)
+            print(f"⏰ بروزرسانی: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+            print("=" * 50)
+            
+            # استراحت 30 ثانیه
+            time.sleep(30)
             
         except KeyboardInterrupt:
-            print("ربات متوقف شد")
+            print("\n👋 ربات متوقف شد")
             break
         except Exception as e:
-            print(f"خطا: {e}")
+            print(f"❌ خطا: {e}")
             time.sleep(10)
 
 if __name__ == "__main__":
